@@ -1,1 +1,100 @@
+package TrabalhoLDE;
+
+public class LDE {
+	private Nodo inicio;
+	
+	public LDE() {
+		this.inicio = null;
+	}
+
+	public void insereOrdenado(int valor) {
+		Nodo novo = new Nodo(valor, null, null);
+
+		if (inicio == null) {
+			inicio = novo;
+			return;
+		}
+		
+		Nodo atual = inicio;
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				System.out.println("Valor " + valor + " já está na lista. Não será inserido novamente.");
+				return;
+			}
+			atual = atual.getProximo();
+		}
+
+		atual = inicio;
+		if (valor < inicio.getValor()) {
+			novo.setProximo(inicio);
+			inicio.setAnterior(novo);
+			inicio = novo;
+			return;
+		}
+
+		while (atual.getProximo() != null && atual.getProximo().getValor() < valor) {
+			atual = atual.getProximo();
+		}
+
+		novo.setProximo(atual.getProximo());
+		//if (atual.getProximo() != null) {
+			atual.getProximo().setAnterior(novo);
+		//}
+		atual.setProximo(novo);
+		novo.setAnterior(atual);
+	}
+
+	public void imprime() {
+		if (inicio == null) {
+			System.out.println("Lista vazia!");
+		} else {
+			Nodo aux = inicio;
+			int pos = 1;
+			while (aux != null) {
+				System.out.println("Posição " + pos + ": Valor " + aux.getValor());
+				aux = aux.getProximo();
+				pos++;
+			}
+		}
+	}
+
+	public void removeValor(int valor) {
+		if (inicio == null) {
+			System.out.println("Lista vazia!");
+			return;
+		}
+
+		Nodo aux = inicio;
+		while (aux != null) {
+			if (aux.getValor() == valor) {
+				if (aux.getAnterior() != null) {
+					aux.getAnterior().setProximo(aux.getProximo());
+				} else {
+					inicio = aux.getProximo();
+				}
+				if (aux.getProximo() != null) {
+					aux.getProximo().setAnterior(aux.getAnterior());
+				}
+				System.out.println("Valor " + valor + " removido!");
+				return;
+			}
+			aux = aux.getProximo();
+		}
+		System.out.println("Valor não encontrado!");
+	}
+
+	public void pesquisar(int valor) {
+		Nodo aux = inicio;
+		int pos = 1;
+		while (aux != null) {
+			if (aux.getValor() == valor) {
+				System.out.println("Valor " + valor + " encontrado na posição " + pos + ".");
+				return;
+			}
+			aux = aux.getProximo();
+			pos++;
+		}
+		System.out.println("Valor " + valor + " não encontrado na lista.");
+	}
+}
 
