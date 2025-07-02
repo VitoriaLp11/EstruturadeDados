@@ -1,0 +1,242 @@
+package trabalhoLDE;
+
+public interface InsercaoStrategy {
+	void inserir(LDE lista, int valor);
+}
+
+package trabalhoLDE;
+
+public class InsercaoOrdenadaCrescente implements InsercaoStrategy {
+	@Override
+	public void inserir(LDE lista, int valor) {
+		Nodo novo = new Nodo(valor);
+
+		if (lista.estaVazia()) {
+			lista.setInicio(novo);
+			return;
+		}
+
+		Nodo atual = lista.getInicio();
+
+		if (valor < atual.getValor()) {
+			novo.setProximo(atual);
+			atual.setAnterior(novo);
+			lista.setInicio(novo);
+			return;
+		}
+
+		while (atual.getProximo() != null && atual.getProximo().getValor() < valor) {
+			atual = atual.getProximo();
+		}
+
+		if (lista.contem(valor)) return;
+
+		novo.setProximo(atual.getProximo());
+		if (atual.getProximo() != null) {
+			atual.getProximo().setAnterior(novo);
+		}
+		atual.setProximo(novo);
+		novo.setAnterior(atual);
+	}
+}
+
+package trabalhoLDE;
+
+public class InsercaoOrdenadaDecrescente implements InsercaoStrategy {
+	@Override
+	public void inserir(LDE lista, int valor) {
+		Nodo novo = new Nodo(valor);
+
+		if (lista.estaVazia()) {
+			lista.setInicio(novo);
+			return;
+		}
+
+		Nodo atual = lista.getInicio();
+
+		if (valor > atual.getValor()) {
+			novo.setProximo(atual);
+			atual.setAnterior(novo);
+			lista.setInicio(novo);
+			return;
+		}
+
+		while (atual.getProximo() != null && atual.getProximo().getValor() > valor) {
+			atual = atual.getProximo();
+		}
+
+		if (lista.contem(valor)) return;
+
+		novo.setProximo(atual.getProximo());
+		if (atual.getProximo() != null) {
+			atual.getProximo().setAnterior(novo);
+		}
+		atual.setProximo(novo);
+		novo.setAnterior(atual);
+	}
+}
+
+package trabalhoLDE;
+
+public class LDE {
+	private Nodo inicio;
+	private InsercaoStrategy estrategiaInsercao;
+
+	public LDE(InsercaoStrategy estrategiaInsercao) {
+		this.inicio = null;
+		this.estrategiaInsercao = estrategiaInsercao;
+	}
+
+	public boolean estaVazia() {
+		return inicio == null;
+	}
+
+	public boolean contem(int valor) {
+		Nodo atual = inicio;
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				return true;
+			}
+			atual = atual.getProximo();
+		}
+		return false;
+	}
+
+	public void inserir(int valor) {
+		estrategiaInsercao.inserir(this, valor);
+	}
+
+	public boolean remover(int valor) {
+		if (estaVazia()) return false;
+
+		Nodo atual = inicio;
+
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				if (atual.getAnterior() != null) {
+					atual.getAnterior().setProximo(atual.getProximo());
+				} else {
+					inicio = atual.getProximo();
+				}
+				if (atual.getProximo() != null) {
+					atual.getProximo().setAnterior(atual.getAnterior());
+				}
+				return true;
+			}
+			atual = atual.getProximo();
+		}
+		return false;
+	}
+
+	public int pesquisar(int valor) {
+		Nodo atual = inicio;
+		int posicao = 1;
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				return posicao;
+			}
+			atual = atual.getProximo();
+			posicao++;
+		}
+		return -1;
+	}
+
+	public void imprimir() {
+		if (estaVazia()) {
+			System.out.println("Lista vazia.");
+			return;
+		}
+
+		Nodo atual = inicio;
+		int pos = 1;
+		while (atual != null) {
+			System.out.println("Posição " + pos + ": " + atual.getValor());
+			atual = atual.getProximo();
+			pos++;
+		}
+	}
+
+	// Getters/Setters
+	public Nodo getInicio() {
+		return inicio;
+	}
+
+	public void setInicio(Nodo inicio) {
+		this.inicio = inicio;
+	}
+
+	public void setEstrategiaInsercao(InsercaoStrategy novaEstrategia) {
+		this.estrategiaInsercao = novaEstrategia;
+	}
+}
+
+
+package trabalhoLDE;
+
+import java.util.Scanner;
+
+public class MainLDE {
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+
+		System.out.println("Escolha o modo de inserção:");
+		System.out.println("1 - Ordem crescente (default)");
+		System.out.println("2 - Ordem decrescente");
+		System.out.print("Opção: ");
+		int tipo = scanner.nextInt();
+
+		InsercaoStrategy estrategia;
+		if (tipo == 2) {
+			estrategia = new InsercaoOrdenadaDecrescente();
+		} else {
+			estrategia = new InsercaoOrdenadaCrescente();
+		}
+
+		LDE lista = new LDE(estrategia);
+		int opcao;
+
+		do {
+			exibirMenu();
+			opcao = scanner.nextInt();
+
+			switch (opcao) {
+				case 1 -> {
+					System.out.print("Valor a inserir: ");
+					int valor = scanner.nextInt();
+					if (lista.contem(valor)) {
+						System.out.println("Valor já está na lista.");
+					} else {
+						lista.inserir(valor);
+						System.out.println("Inserido com sucesso.");
+					}
+				}
+				case 2 -> {
+					System.out.print("Valor a remover: ");
+					int valor = scanner.nextInt();
+					System.out.println(lista.remover(valor) ? "Removido com sucesso." : "Valor não encontrado.");
+				}
+				case 3 -> lista.imprimir();
+				case 4 -> {
+					System.out.print("Valor a pesquisar: ");
+					int valor = scanner.nextInt();
+					int pos = lista.pesquisar(valor);
+					System.out.println(pos == -1 ? "Valor não encontrado." : "Encontrado na posição " + pos);
+				}
+				case 0 -> System.out.println("Encerrando...");
+				default -> System.out.println("Opção inválida.");
+			}
+		} while (opcao != 0);
+
+		scanner.close();
+	}
+
+	private static void exibirMenu() {
+		System.out.println("\n====== MENU ======");
+		System.out.println("1 - Inserir valor");
+		System.out.println("2 - Remover valor");
+		System.out.println("3 - Imprimir lista");
+		System.out.println("4 - Pesquisar valor");
+		System.out.println("0 - Sair");
+		System.out.print("Escolha uma opção: ");
+	}
+}
