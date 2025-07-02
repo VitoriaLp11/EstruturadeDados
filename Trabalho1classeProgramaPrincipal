@@ -1,53 +1,60 @@
 package TrabalhoLDE;
-
 import java.util.Scanner;
 
-public class mainLDE {
+public class MainLDE {
 	public static void main(String[] args) {
-		Scanner sc = new Scanner(System.in);
-		LDE lde = new LDE();
+		Scanner scanner = new Scanner(System.in);
+		LDE lista = new LDE();
 		int opcao;
 
 		do {
-			System.out.println("\n--------------------------------------");
-			System.out.println("Por favor, escolha uma opção:");
-			System.out.println("1 - Inserir um nodo");
-			System.out.println("2 - Remover um nodo");
-			System.out.println("3 - Imprimir todos os valores da LDE");
-			System.out.println("4 - Pesquisar um valor na LDE");
+			System.out.println("\n======================================");
+			System.out.println("MENU - Lista Duplamente Encadeada");
+			System.out.println("1 - Inserir um valor");
+			System.out.println("2 - Remover um valor");
+			System.out.println("3 - Imprimir a lista");
+			System.out.println("4 - Pesquisar um valor");
 			System.out.println("0 - Sair");
-			System.out.println("--------------------------------------");
+			System.out.println("======================================");
 			System.out.print("Opção: ");
-			opcao = sc.nextInt();
+			opcao = scanner.nextInt();
 
 			switch (opcao) {
 				case 1:
+					// Inserção
 					System.out.print("Digite o valor a ser inserido: ");
-					int valorInserir = sc.nextInt();
-					lde.insereOrdenado(valorInserir);
+					int valorParaInserir = scanner.nextInt();
+					lista.inserirOrdenado(valorParaInserir);
 					break;
+
 				case 2:
+					// Remoção
 					System.out.print("Digite o valor a ser removido: ");
-					int valorRemover = sc.nextInt();
-					lde.removeValor(valorRemover);
+					int valorParaRemover = scanner.nextInt();
+					lista.removerValor(valorParaRemover);
 					break;
+
 				case 3:
-					lde.imprime();
+					// Impressão da lista
+					lista.imprimir();
 					break;
+
 				case 4:
+					// Pesquisa
 					System.out.print("Digite o valor a ser pesquisado: ");
-					int valorPesquisar = sc.nextInt();
-					lde.pesquisar(valorPesquisar);
+					int valorParaPesquisar = scanner.nextInt();
+					lista.pesquisar(valorParaPesquisar);
 					break;
+
 				case 0:
 					System.out.println("Saindo do programa...");
 					break;
+
 				default:
-					System.out.println("Opção inválida!");
+					System.out.println("Opção inválida! Tente novamente.");
 			}
 		} while (opcao != 0);
 
-		sc.close();
+		scanner.close();
 	}
 }
-
