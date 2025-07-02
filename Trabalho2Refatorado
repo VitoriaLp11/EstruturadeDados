@@ -1,0 +1,212 @@
+package trabalhoDois;
+
+import java.util.*;
+
+public class OrdenacaoComparativa {
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		int[] vetorOriginal = lerVetorValido(scanner);
+		System.out.println("\nEntrada aceita! Prosseguindo com a ordenação...");
+
+		// Criação das cópias e objetos de resultado
+		int[] vetorSelection = vetorOriginal.clone();
+		int[] vetorQuick = vetorOriginal.clone();
+		int[] vetorMerge = vetorOriginal.clone();
+
+		ResultadoOrdenacao resultadoSelection = AlgoritmosOrdenacao.selectionSort(vetorSelection, "Selection Sort");
+		ResultadoOrdenacao resultadoQuick = AlgoritmosOrdenacao.quickSort(vetorQuick, "Quick Sort");
+		ResultadoOrdenacao resultadoMerge = AlgoritmosOrdenacao.mergeSort(vetorMerge, "Merge Sort");
+
+		// Exibição e exportação
+		System.out.println("\nVetor original: " + Arrays.toString(vetorOriginal));
+		resultadoSelection.mostrar();
+		resultadoQuick.mostrar();
+		resultadoMerge.mostrar();
+
+		ResultadoOrdenacao.exportarResultados("resultado.txt", vetorOriginal,
+				resultadoSelection, resultadoQuick, resultadoMerge);
+
+		scanner.close();
+	}
+
+	// Lê 8 números inteiros pares e positivos do usuário
+	private static int[] lerVetorValido(Scanner scanner) {
+		int[] vetor = new int[8];
+		while (true) {
+			System.out.println("Digite 8 números INTEIROS, POSITIVOS e PARES:");
+			boolean valido = true;
+
+			for (int i = 0; i < 8; i++) {
+				System.out.print("Número " + (i + 1) + ": ");
+				int num = scanner.nextInt();
+
+				if (num <= 0 || num % 2 != 0) {
+					System.out.println("⚠️ Valor inválido! Todos os números devem ser positivos e pares.");
+					valido = false;
+					break;
+				}
+				vetor[i] = num;
+			}
+			if (valido) return vetor;
+		}
+	}
+}
+
+
+package trabalhoDois;
+
+import java.io.*;
+import java.util.*;
+
+public class ResultadoOrdenacao {
+	private final String nomeAlgoritmo;
+	private final int[] vetorOrdenado;
+	private final int comparacoes;
+	private final int trocas;
+
+	public ResultadoOrdenacao(String nomeAlgoritmo, int[] vetorOrdenado, int comparacoes, int trocas) {
+		this.nomeAlgoritmo = nomeAlgoritmo;
+		this.vetorOrdenado = vetorOrdenado;
+		this.comparacoes = comparacoes;
+		this.trocas = trocas;
+	}
+
+	public void mostrar() {
+		System.out.println("\nAlgoritmo: " + nomeAlgoritmo);
+		System.out.println("Vetor ordenado: " + Arrays.toString(vetorOrdenado));
+		System.out.println("Comparações: " + comparacoes);
+		System.out.println("Trocas: " + trocas);
+	}
+
+	public void salvar(PrintWriter writer) {
+		writer.println("\nAlgoritmo: " + nomeAlgoritmo);
+		writer.println("Vetor ordenado: " + Arrays.toString(vetorOrdenado));
+		writer.println("Comparações: " + comparacoes);
+		writer.println("Trocas: " + trocas);
+	}
+
+	public static void exportarResultados(String nomeArquivo, int[] original, ResultadoOrdenacao... resultados) {
+		try (PrintWriter writer = new PrintWriter(nomeArquivo)) {
+			writer.println("Vetor original: " + Arrays.toString(original));
+			for (ResultadoOrdenacao resultado : resultados) {
+				resultado.salvar(writer);
+			}
+			System.out.println("\n📁 Resultados exportados para '" + nomeArquivo + "'.");
+		} catch (IOException e) {
+			System.out.println("Erro ao salvar arquivo: " + e.getMessage());
+		}
+	}
+}
+
+
+package trabalhoDois;
+
+public class AlgoritmosOrdenacao {
+
+	public static ResultadoOrdenacao selectionSort(int[] vetor, String nome) {
+		int comparacoes = 0;
+		int trocas = 0;
+		int n = vetor.length;
+
+		for (int i = 0; i < n - 1; i++) {
+			int min = i;
+			for (int j = i + 1; j < n; j++) {
+				comparacoes++;
+				if (vetor[j] < vetor[min]) {
+					min = j;
+				}
+			}
+			if (i != min) {
+				trocar(vetor, i, min);
+				trocas += 2;
+			}
+		}
+
+		return new ResultadoOrdenacao(nome, vetor, comparacoes, trocas);
+	}
+
+	public static ResultadoOrdenacao quickSort(int[] vetor, String nome) {
+		Contador contador = new Contador();
+		quickSortRec(vetor, 0, vetor.length - 1, contador);
+		return new ResultadoOrdenacao(nome, vetor, contador.comparacoes, contador.trocas);
+	}
+
+	private static void quickSortRec(int[] vetor, int ini, int fim, Contador c) {
+		if (ini < fim) {
+			int pi = particionar(vetor, ini, fim, c);
+			quickSortRec(vetor, ini, pi - 1, c);
+			quickSortRec(vetor, pi + 1, fim, c);
+		}
+	}
+
+	private static int particionar(int[] vetor, int ini, int fim, Contador c) {
+		int pivo = vetor[fim];
+		int i = ini - 1;
+
+		for (int j = ini; j < fim; j++) {
+			c.comparacoes++;
+			if (vetor[j] < pivo) {
+				i++;
+				trocar(vetor, i, j);
+				c.trocas++;
+			}
+		}
+
+		trocar(vetor, i + 1, fim);
+		c.trocas++;
+		return i + 1;
+	}
+
+	public static ResultadoOrdenacao mergeSort(int[] vetor, String nome) {
+		Contador contador = new Contador();
+		mergeSortRec(vetor, 0, vetor.length - 1, contador);
+		return new ResultadoOrdenacao(nome, vetor, contador.comparacoes, contador.trocas);
+	}
+
+	private static void mergeSortRec(int[] vetor, int esq, int dir, Contador c) {
+		if (esq < dir) {
+			int meio = (esq + dir) / 2;
+			mergeSortRec(vetor, esq, meio, c);
+			mergeSortRec(vetor, meio + 1, dir, c);
+			intercalar(vetor, esq, meio, dir, c);
+		}
+	}
+
+	private static void intercalar(int[] vetor, int esq, int meio, int dir, Contador c) {
+		int n1 = meio - esq + 1;
+		int n2 = dir - meio;
+
+		int[] L = new int[n1];
+		int[] R = new int[n2];
+
+		for (int i = 0; i < n1; i++) L[i] = vetor[esq + i];
+		for (int j = 0; j < n2; j++) R[j] = vetor[meio + 1 + j];
+
+		int i = 0, j = 0, k = esq;
+
+		while (i < n1 && j < n2) {
+			c.comparacoes++;
+			if (L[i] <= R[j]) {
+				vetor[k++] = L[i++];
+			} else {
+				vetor[k++] = R[j++];
+				c.trocas++;
+			}
+		}
+
+		while (i < n1) vetor[k++] = L[i++];
+		while (j < n2) vetor[k++] = R[j++];
+	}
+
+	private static void trocar(int[] vetor, int i, int j) {
+		int temp = vetor[i];
+		vetor[i] = vetor[j];
+		vetor[j] = temp;
+	}
+
+	private static class Contador {
+		int comparacoes = 0;
+		int trocas = 0;
+	}
+}
+
