@@ -2,17 +2,19 @@ package TrabalhoLDE;
 
 public class Nodo {
 	private int valor;
-	private Nodo proximo, anterior;
+	private Nodo proximo;
+	private Nodo anterior;
 
+	// Construtor padrão: nó vazio
 	public Nodo() {
-		this.valor = 0;
-		this.proximo = this.anterior = null;
+		this(0, null, null);
 	}
-	
-	public Nodo(int v, Nodo p, Nodo a) {
-		this.valor = v;
-		this.proximo = p;
-		this.anterior = a;
+
+	// Construtor com parâmetros
+	public Nodo(int valor, Nodo proximo, Nodo anterior) {
+		this.valor = valor;
+		this.proximo = proximo;
+		this.anterior = anterior;
 	}
 
 	public int getValor() {
@@ -38,6 +40,4 @@ public class Nodo {
 	public void setAnterior(Nodo anterior) {
 		this.anterior = anterior;
 	}
-
 }
-
