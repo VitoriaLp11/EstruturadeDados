@@ -1,21 +1,37 @@
 package TrabalhoLDE;
 
+/**
+ * Representa uma Lista Duplamente Encadeada com inserção ordenada.
+ */
 public class LDE {
 	private Nodo inicio;
-	
+
 	public LDE() {
 		this.inicio = null;
 	}
 
-	public void insereOrdenado(int valor) {
-		Nodo novo = new Nodo(valor, null, null);
+	/**
+	 * Insere um valor na lista de forma ordenada.
+	 * Evita inserir valores duplicados.
+	 */
+	public void inserirOrdenado(int valor) {
+		Nodo novoNodo = new Nodo(valor, null, null);
 
 		if (inicio == null) {
-			inicio = novo;
+			inicio = novoNodo;
 			return;
 		}
-		
+
+		if (valor < inicio.getValor()) {
+			novoNodo.setProximo(inicio);
+			inicio.setAnterior(novoNodo);
+			inicio = novoNodo;
+			return;
+		}
+
 		Nodo atual = inicio;
+
+		// Verifica se o valor já existe na lista
 		while (atual != null) {
 			if (atual.getValor() == valor) {
 				System.out.println("Valor " + valor + " já está na lista. Não será inserido novamente.");
@@ -25,76 +41,83 @@ public class LDE {
 		}
 
 		atual = inicio;
-		if (valor < inicio.getValor()) {
-			novo.setProximo(inicio);
-			inicio.setAnterior(novo);
-			inicio = novo;
-			return;
-		}
-
 		while (atual.getProximo() != null && atual.getProximo().getValor() < valor) {
 			atual = atual.getProximo();
 		}
 
-		novo.setProximo(atual.getProximo());
-		//if (atual.getProximo() != null) {
-			atual.getProximo().setAnterior(novo);
-		//}
-		atual.setProximo(novo);
-		novo.setAnterior(atual);
-	}
-
-	public void imprime() {
-		if (inicio == null) {
-			System.out.println("Lista vazia!");
-		} else {
-			Nodo aux = inicio;
-			int pos = 1;
-			while (aux != null) {
-				System.out.println("Posição " + pos + ": Valor " + aux.getValor());
-				aux = aux.getProximo();
-				pos++;
-			}
+		novoNodo.setProximo(atual.getProximo());
+		if (atual.getProximo() != null) {
+			atual.getProximo().setAnterior(novoNodo);
 		}
+		atual.setProximo(novoNodo);
+		novoNodo.setAnterior(atual);
 	}
 
-	public void removeValor(int valor) {
+	/**
+	 * Imprime todos os elementos da lista.
+	 */
+	public void imprimir() {
 		if (inicio == null) {
 			System.out.println("Lista vazia!");
 			return;
 		}
 
-		Nodo aux = inicio;
-		while (aux != null) {
-			if (aux.getValor() == valor) {
-				if (aux.getAnterior() != null) {
-					aux.getAnterior().setProximo(aux.getProximo());
+		Nodo atual = inicio;
+		int posicao = 1;
+
+		while (atual != null) {
+			System.out.println("Posição " + posicao + ": Valor " + atual.getValor());
+			atual = atual.getProximo();
+			posicao++;
+		}
+	}
+
+	/**
+	 * Remove o primeiro nó com o valor informado, se existir.
+	 */
+	public void removerValor(int valor) {
+		if (inicio == null) {
+			System.out.println("Lista vazia!");
+			return;
+		}
+
+		Nodo atual = inicio;
+
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				if (atual.getAnterior() != null) {
+					atual.getAnterior().setProximo(atual.getProximo());
 				} else {
-					inicio = aux.getProximo();
+					inicio = atual.getProximo();
 				}
-				if (aux.getProximo() != null) {
-					aux.getProximo().setAnterior(aux.getAnterior());
+
+				if (atual.getProximo() != null) {
+					atual.getProximo().setAnterior(atual.getAnterior());
 				}
+
 				System.out.println("Valor " + valor + " removido!");
 				return;
 			}
-			aux = aux.getProximo();
+			atual = atual.getProximo();
 		}
 		System.out.println("Valor não encontrado!");
 	}
 
+	/**
+	 * Pesquisa um valor na lista e informa sua posição.
+	 */
 	public void pesquisar(int valor) {
-		Nodo aux = inicio;
-		int pos = 1;
-		while (aux != null) {
-			if (aux.getValor() == valor) {
-				System.out.println("Valor " + valor + " encontrado na posição " + pos + ".");
+		Nodo atual = inicio;
+		int posicao = 1;
+
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				System.out.println("Valor " + valor + " encontrado na posição " + posicao + ".");
 				return;
 			}
-			aux = aux.getProximo();
-			pos++;
+			atual = atual.getProximo();
+			posicao++;
 		}
 		System.out.println("Valor " + valor + " não encontrado na lista.");
 	}
 }
-
