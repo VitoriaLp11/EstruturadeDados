@@ -1,0 +1,175 @@
+package trabalhoDois;
+
+public interface OrdenadorStrategy {
+	void ordenar(int[] vetor, Contador contador);
+}
+
+package trabalhoDois;
+
+public class Contador {
+	public int comparacoes = 0;
+	public int trocas = 0;
+}
+
+package trabalhoDois;
+
+public class SelectionSort implements OrdenadorStrategy {
+	@Override
+	public void ordenar(int[] v, Contador c) {
+		int n = v.length;
+		for (int i = 0; i < n - 1; i++) {
+			int min = i;
+			for (int j = i + 1; j < n; j++) {
+				c.comparacoes++;
+				if (v[j] < v[min]) {
+					min = j;
+				}
+			}
+			if (i != min) {
+				int temp = v[i];
+				v[i] = v[min];
+				v[min] = temp;
+				c.trocas += 2;
+			}
+		}
+	}
+}
+
+
+package trabalhoDois;
+
+public class QuickSort implements OrdenadorStrategy {
+	@Override
+	public void ordenar(int[] v, Contador c) {
+		quickSort(v, 0, v.length - 1, c);
+	}
+
+	private void quickSort(int[] v, int ini, int fim, Contador c) {
+		if (ini < fim) {
+			int pi = particionar(v, ini, fim, c);
+			quickSort(v, ini, pi - 1, c);
+			quickSort(v, pi + 1, fim, c);
+		}
+	}
+
+	private int particionar(int[] v, int ini, int fim, Contador c) {
+		int pivo = v[fim];
+		int i = ini - 1;
+		for (int j = ini; j < fim; j++) {
+			c.comparacoes++;
+			if (v[j] < pivo) {
+				i++;
+				trocar(v, i, j, c);
+			}
+		}
+		trocar(v, i + 1, fim, c);
+		return i + 1;
+	}
+
+	private void trocar(int[] v, int i, int j, Contador c) {
+		if (i != j) {
+			int temp = v[i];
+			v[i] = v[j];
+			v[j] = temp;
+			c.trocas++;
+		}
+	}
+}
+
+
+package trabalhoDois;
+
+public class MergeSort implements OrdenadorStrategy {
+	@Override
+	public void ordenar(int[] v, Contador c) {
+		mergeSort(v, 0, v.length - 1, c);
+	}
+
+	private void mergeSort(int[] v, int esq, int dir, Contador c) {
+		if (esq < dir) {
+			int meio = (esq + dir) / 2;
+			mergeSort(v, esq, meio, c);
+			mergeSort(v, meio + 1, dir, c);
+			intercalar(v, esq, meio, dir, c);
+		}
+	}
+
+	private void intercalar(int[] v, int esq, int meio, int dir, Contador c) {
+		int n1 = meio - esq + 1;
+		int n2 = dir - meio;
+
+		int[] L = new int[n1];
+		int[] R = new int[n2];
+
+		for (int i = 0; i < n1; i++) L[i] = v[esq + i];
+		for (int j = 0; j < n2; j++) R[j] = v[meio + 1 + j];
+
+		int i = 0, j = 0, k = esq;
+
+		while (i < n1 && j < n2) {
+			c.comparacoes++;
+			if (L[i] <= R[j]) {
+				v[k++] = L[i++];
+			} else {
+				v[k++] = R[j++];
+				c.trocas++;
+			}
+		}
+
+		while (i < n1) v[k++] = L[i++];
+		while (j < n2) v[k++] = R[j++];
+	}
+}
+
+
+package trabalhoDois;
+
+import java.util.*;
+
+public class OrdenacaoComparativa {
+
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+
+		int[] vetorOriginal = new int[8];
+
+		while (true) {
+			System.out.println("Digite 8 números inteiros POSITIVOS e PARES:");
+			boolean valido = true;
+
+			for (int i = 0; i < 8; i++) {
+				System.out.print("Número " + (i + 1) + ": ");
+				int num = scanner.nextInt();
+				if (num <= 0 || num % 2 != 0) {
+					System.out.println("Número inválido! Reiniciando...");
+					valido = false;
+					break;
+				}
+				vetorOriginal[i] = num;
+			}
+
+			if (valido) break;
+		}
+
+		System.out.println("Entrada aceita. Executando ordenações...");
+
+		executarEExibir("Selection Sort", new SelectionSort(), vetorOriginal);
+		executarEExibir("Quick Sort", new QuickSort(), vetorOriginal);
+		executarEExibir("Merge Sort", new MergeSort(), vetorOriginal);
+
+		scanner.close();
+	}
+
+	private static void executarEExibir(String nome, OrdenadorStrategy estrategia, int[] vetorOriginal) {
+		int[] vetor = vetorOriginal.clone();
+		Contador contador = new Contador();
+
+		estrategia.ordenar(vetor, contador);
+
+		System.out.println("\nAlgoritmo: " + nome);
+		System.out.println("Vetor ordenado: " + Arrays.toString(vetor));
+		System.out.println("Comparações: " + contador.comparacoes);
+		System.out.println("Trocas: " + contador.trocas);
+	}
+}
+
