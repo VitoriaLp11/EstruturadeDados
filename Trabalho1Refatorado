@@ -1,0 +1,216 @@
+package trabalhoLDE;
+
+public class Nodo {
+	private int valor;
+	private Nodo proximo;
+	private Nodo anterior;
+
+	public Nodo(int valor) {
+		this.valor = valor;
+		this.proximo = null;
+		this.anterior = null;
+	}
+
+	public int getValor() {
+		return valor;
+	}
+
+	public void setValor(int valor) {
+		this.valor = valor;
+	}
+
+	public Nodo getProximo() {
+		return proximo;
+	}
+
+	public void setProximo(Nodo proximo) {
+		this.proximo = proximo;
+	}
+
+	public Nodo getAnterior() {
+		return anterior;
+	}
+
+	public void setAnterior(Nodo anterior) {
+		this.anterior = anterior;
+	}
+}
+
+public class LDE {
+	private Nodo inicio;
+
+	public LDE() {
+		this.inicio = null;
+	}
+
+	public boolean estaVazia() {
+		return inicio == null;
+	}
+
+	public void inserirOrdenado(int valor) {
+		Nodo novo = new Nodo(valor);
+
+		if (estaVazia()) {
+			inicio = novo;
+			return;
+		}
+
+		if (valor < inicio.getValor()) {
+			novo.setProximo(inicio);
+			inicio.setAnterior(novo);
+			inicio = novo;
+			return;
+		}
+
+		Nodo atual = inicio;
+		while (atual.getProximo() != null && atual.getProximo().getValor() < valor) {
+			atual = atual.getProximo();
+		}
+
+		if (contem(valor)) return;
+
+		novo.setProximo(atual.getProximo());
+		if (atual.getProximo() != null) {
+			atual.getProximo().setAnterior(novo);
+		}
+		atual.setProximo(novo);
+		novo.setAnterior(atual);
+	}
+
+	public boolean contem(int valor) {
+		Nodo atual = inicio;
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				return true;
+			}
+			atual = atual.getProximo();
+		}
+		return false;
+	}
+
+	public boolean remover(int valor) {
+		if (estaVazia()) {
+			return false;
+		}
+
+		Nodo atual = inicio;
+
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				if (atual.getAnterior() != null) {
+					atual.getAnterior().setProximo(atual.getProximo());
+				} else {
+					inicio = atual.getProximo();
+				}
+
+				if (atual.getProximo() != null) {
+					atual.getProximo().setAnterior(atual.getAnterior());
+				}
+				return true;
+			}
+			atual = atual.getProximo();
+		}
+		return false;
+	}
+
+	public int pesquisar(int valor) {
+		Nodo atual = inicio;
+		int posicao = 1;
+		while (atual != null) {
+			if (atual.getValor() == valor) {
+				return posicao;
+			}
+			atual = atual.getProximo();
+			posicao++;
+		}
+		return -1;
+	}
+
+	public void imprimir() {
+		if (estaVazia()) {
+			System.out.println("Lista vazia.");
+			return;
+		}
+
+		Nodo atual = inicio;
+		int posicao = 1;
+		while (atual != null) {
+			System.out.println("Posição " + posicao + ": " + atual.getValor());
+			atual = atual.getProximo();
+			posicao++;
+		}
+	}
+}
+
+import java.util.Scanner;
+public class MainLDE {
+	public static void main(String[] args) {
+		Scanner scanner = new Scanner(System.in);
+		LDE lista = new LDE();
+		int opcao;
+
+		do {
+			exibirMenu();
+			opcao = scanner.nextInt();
+			scanner.nextLine(); // Limpa o buffer
+
+			switch (opcao) {
+				case 1:
+					System.out.print("Digite o valor a ser inserido: ");
+					int valorInserir = scanner.nextInt();
+					if (lista.contem(valorInserir)) {
+						System.out.println("Valor já está na lista.");
+					} else {
+						lista.inserirOrdenado(valorInserir);
+						System.out.println("Valor inserido com sucesso.");
+					}
+					break;
+
+				case 2:
+					System.out.print("Digite o valor a ser removido: ");
+					int valorRemover = scanner.nextInt();
+					if (lista.remover(valorRemover)) {
+						System.out.println("Valor removido com sucesso.");
+					} else {
+						System.out.println("Valor não encontrado.");
+					}
+					break;
+
+				case 3:
+					lista.imprimir();
+					break;
+
+				case 4:
+					System.out.print("Digite o valor a ser pesquisado: ");
+					int valorPesquisa = scanner.nextInt();
+					int posicao = lista.pesquisar(valorPesquisa);
+					if (posicao != -1) {
+						System.out.println("Valor encontrado na posição " + posicao + ".");
+					} else {
+						System.out.println("Valor não encontrado.");
+					}
+					break;
+
+				case 0:
+					System.out.println("Encerrando o programa.");
+					break;
+
+				default:
+					System.out.println("Opção inválida. Tente novamente.");
+			}
+		} while (opcao != 0);
+
+		scanner.close();
+	}
+
+	private static void exibirMenu() {
+		System.out.println("\n=======================");
+		System.out.println("MENU - Lista Duplamente Encadeada");
+		System.out.println("1 - Inserir valor");
+		System.out.println("2 - Remover valor");
+		System.out.println("3 - Imprimir lista");
+		System.out.println("4 - Pesquisar valor");
+		System.out.println("0 - Sair");
+		System.out.print("Escolha uma opção: ");
+	}
+}
