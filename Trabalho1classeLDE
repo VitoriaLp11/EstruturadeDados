@@ -1,8 +1,5 @@
 package TrabalhoLDE;
 
-/**
- * Representa uma Lista Duplamente Encadeada com inserção ordenada.
- */
 public class LDE {
 	private Nodo inicio;
 
@@ -10,10 +7,9 @@ public class LDE {
 		this.inicio = null;
 	}
 
-	/**
-	 * Insere um valor na lista de forma ordenada.
-	 * Evita inserir valores duplicados.
-	 */
+//Insere um valor na lista de forma ordenada
+//Evita inserir valores duplicados.
+
 	public void inserirOrdenado(int valor) {
 		Nodo novoNodo = new Nodo(valor, null, null);
 
@@ -53,9 +49,7 @@ public class LDE {
 		novoNodo.setAnterior(atual);
 	}
 
-	/**
-	 * Imprime todos os elementos da lista.
-	 */
+	//Imprime todos os elementos da lista.
 	public void imprimir() {
 		if (inicio == null) {
 			System.out.println("Lista vazia!");
@@ -72,9 +66,7 @@ public class LDE {
 		}
 	}
 
-	/**
-	 * Remove o primeiro nó com o valor informado, se existir.
-	 */
+	//Remove o primeiro nó com o valor informado, se existir.
 	public void removerValor(int valor) {
 		if (inicio == null) {
 			System.out.println("Lista vazia!");
@@ -103,9 +95,7 @@ public class LDE {
 		System.out.println("Valor não encontrado!");
 	}
 
-	/**
-	 * Pesquisa um valor na lista e informa sua posição.
-	 */
+	///Pesquisa um valor na lista e informa sua posição.
 	public void pesquisar(int valor) {
 		Nodo atual = inicio;
 		int posicao = 1;
